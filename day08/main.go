@@ -13,23 +13,23 @@ func main() {
 
 	lib := library.NewLibrary()
 	lib.Add("Go", 2)
-	lib.Add("Go", 1)
-	fmt.Println("Go:", lib.Count("Go")) // 3
+	lib.Add("SQL", 1)
 
-	for i := 1; i <= 4; i++ {
-		err := lib.Take("Go")
-		if errors.Is(err, library.ErrNoCopies) {
-			fmt.Println("попытка", i, ": книга закончилась")
-		} else if err != nil {
-			fmt.Println("попытка", i, ": другая ошибка:", err)
-		} else {
-			fmt.Println("попытка", i, ": взяла, осталось", lib.Count("Go"))
-		}
-	}
+	tryTake(lib, "Go")
+	tryTake(lib, "SQL")
+	tryTake(lib, "SQL")
+	tryTake(lib, "Python")
+}
 
-	err := lib.Take("Python")
+func tryTake(l *library.Library, title string) {
+	err := l.Take(title)
 	if errors.Is(err, library.ErrBookNotFound) {
-		fmt.Println("Python: такой книги нет")
+		fmt.Printf("книги %q нет в библиотеке\n", title)
+	} else if errors.Is(err, library.ErrNoCopies) {
+		fmt.Printf("%q закончилась, приходи позже\n", title)
+	} else if err != nil {
+		fmt.Printf("неизвестная ошибка: %v\n", err)
+	} else {
+		fmt.Printf("взяла %q, осталось %d\n", title, l.Count(title))
 	}
-	fmt.Println("Python:", lib.Count("Python")) // 0
 }
